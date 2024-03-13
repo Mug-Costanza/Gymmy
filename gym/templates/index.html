@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+  .btn:hover {
+    background-color: #ff7733; /* Lighter shade for hover effect */
+    color: #ffffff;
+  }
+
+  /* Custom style to ensure content is centered within the left half */
+  .left-half-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh; /* Adjust height as needed */
+  }
+
+  /* Style for the image container */
+  .image-container {
+    max-width: 50%; /* Maximum width is half of the screen */
+    width: 20%; /* Take full width of the container */
+    text-align: center; /* Center the image horizontally */
+  }
+
+  /* Style for the content container */
+  .content-container {
+    max-width: 50%; /* Maximum width is half of the screen */
+    width: 100%; /* Take full width of the container */
+    text-align: center; /* Center the text content horizontally */
+    padding: 0 20px; /* Add padding to separate content from the image */
+  }
+
+  /* Ensure responsiveness */
+  @media (max-width: 768px) {
+    .left-half-center {
+      flex-direction: column; /* Stack elements vertically on small screens */
+    }
+    .image-container, .content-container {
+      max-width: 100%; /* Adjust width to take full width on small screens */
+    }
+  }
+</style>
+<title>Gymmy</title>
+<div class="container-fluid">
+    <div class="row left-half-center">
+        <!-- Image container on the left half -->
+        <div class="col-12 col-md-6 image-container">
+            <img src="{% static 'favicon.png' %}" class="img-fluid" alt="Large Image">
+        </div>
+        <!-- Content container on the right half -->
+        {% if user.is_authenticated %}
+        <script>
+                  window.location.href = "{% url 'profile' request.user.profile.pk %}";
+        </script>
+        {% else %}
+        <div class="col-12 col-md-6 content-container">
+            <div>
+                <h1 class="display-2">Find a <span style="color: #ff661a;">Swole</span><span style="color: #465056;">Mate</span></h1>
+                <p class="mt-3 lead">Sign up to connect with gym partners.</p>
+                <div class="mt-5">
+                    <a href="{% url 'login' %}" class="btn" style="background-color: #ff661a; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease; margin-right: 10px;">Log In</a>
+                    <a href="{% url 'register' %}" class="btn" style="background-color: #465056; color: #ffffff; border: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease;">Register</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
+

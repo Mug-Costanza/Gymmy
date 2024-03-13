@@ -1,0 +1,47 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #ff661a; margin-bottom: 20px;">
+  <div class="container">
+    <a class="navbar-brand" style="color: #ffffff;" href="{% url 'home' %}"><img src="{% static 'favicon.ico' %}" width="50" height="50" style="margin-right: 10px;"/></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'about' %}" style="color: #ffffff;">About</a>
+          </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'find-partner' %}" style="color: #ffffff;">Find a Partner</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{% url 'find-trainer' %}" style="color: #ffffff;">Find a Trainer</a>
+        </li>
+        <!-- Add more navigation links as needed -->
+      </ul>
+      <!-- Add login/logout or user profile links here -->
+      {% if request.user.is_authenticated %}
+        {% if request.user.profile %}
+        <div class="nav-item">
+            <a class="nav-link text-dark" href="{% url 'profile' request.user.profile.pk %}">
+                <div class="profile-picture-container">
+                    <i class="fas fa-user profile-icon" style="font-size: 36px; color: #fff; margin-right: 10px;"></i>
+                </div>
+            </a>
+            </div>
+            <li class="nav-item" style="list-style: none;">
+              <a class="nav-link" href="{% url 'calendar' %}" style="color: #ffffff;"><img src="{% static 'calendar.png' %}" width="50" height="50"/></a>
+            </li>
+            <li class="nav-item" style="list-style: none;">
+              <a class="nav-link" href="{% url 'local-gyms' %}" style="color: #ffffff;"><img src="{% static 'location.png' %}" width="50" height="50"/></a>
+            </li>
+            <li class="nav-item" style="list-style: none;jj">
+              <a class="nav-link" href="{% url 'logout' %}" style="color: #ffffff;">Log Out</a>
+            </li>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</nav>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+

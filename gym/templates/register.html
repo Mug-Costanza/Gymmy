@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<title>Register - Gymmy</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+    .center-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .form-container {
+        width: 100%;
+        max-width: 500px;
+        padding: 15px;
+        margin: auto;
+    }
+</style>
+
+<h2 style="text-align: center;">Register</h2>
+
+<div class="center-screen">
+    <div class="form-container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}
