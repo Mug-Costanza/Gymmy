@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load custom_filters %}
+{% load weight_filters %}
+<title>{% if profile.name %}{{ profile.name }} - {% else%}{{ user }} - {% endif %} Gymmy</title>
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-picture {
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    .profile-info p {
+        margin-bottom: 5px;
+    }
+
+    .stats-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f2f2f2;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .personal-bests {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-gap: 20px;
+    }
+
+    .pb-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    .pb-item p {
+        margin: 0;
+    }
+
+    .pb-item p span {
+        font-weight: bold;
+    }
+    
+    .workout-form {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+    .workout-buttons {
+        display: inline-flex; /* Display buttons inline */
+        align-items: center; /* Align items vertically */
+        gap: 10px; /* Gap between buttons */
+    }
+
+    .workout-buttons button {
+        background-color: #ff661a;
+        color: #fff;
+        border: none;
+        padding: 6px 12px; /* Adjust padding to make buttons smaller */
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        outline: none;
+        font-size: 14px; /* Adjust font size to make buttons smaller */
+        line-height: 3;
+    }
+
+    .workout-buttons button.active {
+        background-color: #b33c00;
+        color: #fff;
+    }
+</style>
+<div class="container">
+    <div class="row justify-content-center mt-5" style="color: #465056;">
+        <div class="card profile-card col-md-8 col-sm-12 shadow-sm px-5 pt-3">
+            <img src="{{ profile.picture.url }}" class="profile-picture" width="100" height="100" />
+            <h3 class="py-2">{% if profile.name %}{{ profile.name }}{% else %}{{ user }}{% endif %}</h3>
+            <div class="profile-info">
+                {% if profile.sex %}
+                <p><strong style="color: #ff661a;">Sex:</strong> {{ profile.sex }}</p>
+                {% endif %}
+                {% if profile.location %}
+                <p><strong style="color: #ff661a;">Location:</strong> {{ profile.location }}</p>
+                {% endif %}
+                {% if profile.birth_date %}
+                <p><strong style="color: #ff661a;">Birth Date:</strong> {{ profile.birth_date }}</p>
+                {% endif %}
+                {% if profile.bio %}
+                <p><strong style="color: #ff661a;">Bio:</strong> {{ profile.bio }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Submit Workouts -->
+    {% if user == request.user %}
+    <div class="workout-form col-md-8 col-sm-12" style="color: #465056;">
+        <h3 class="text-center mb-4" style="font-weight: 700; font-size: 40px;">Log a Workout</h3>
+        <form method="post" onsubmit="return validateForm()">
+            {% csrf_token %}
+            <div class="form-group text-center">
+                <div class="workout-buttons" style="margin-bottom: 10px;">
+                    <button type="button" data-type="weightlifting" onclick="setType('weightlifting')">Weightlifting</button>
+                    <button type="button" data-type="running" onclick="setType('running')">Running</button>
+                    <button type="button" data-type="cycling" onclick="setType('cycling')">Cycling</button>
+                    <button type="button" data-type="swimming" onclick="setType('swimming')">Swimming</button>
+                    <button type="button" data-type="climbing" onclick="setType('climbing')">Climbing</button>
+                    <button type="button" data-type="rowing" onclick="setType('rowing')">Rowing</button>
+                    <button type="button" data-type="combat" onclick="setType('combat')">Combat</button>
+                    <button type="button" data-type="yoga" onclick="setType('yoga')">Yoga</button>
+                    <input type="hidden" id="id_type" name="type">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_duration">Duration (minutes):</label>
+                {{ form.duration }}
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="id_month">Month:</label> <!-- Fixing the label for month -->
+                        <div class="row">
+                            <div class="col">
+                                {{ form.month }}
+                            </div>
+                            <div class="col">
+                                <label for="id_day">Day:</label> <!-- Fixing the label for day -->
+                                {{ form.day }}
+                            </div>
+                            <div class="col">
+                                <label for="id_year">Year:</label> <!-- Fixing the label for year -->
+                                {{ form.year }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_time">Time (Optional):</label>
+                        {{ form.time }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="id_location">Location (Optional):</label>
+                {{ form.location }}
+            </div>
+            <div class="form-group text-center">
+            <button type="submit" class="btn" style="margin-top: 10px; text-align: center; background-color: #ff661a; color: #fff;">Submit</button>
+            </div>
+            {% if form.errors %}
+              <div class="error">
+                <p>Please correct the following errors:</p>
+                {% for field in form %}
+                  {% for error in field.errors %}
+                    <p style="color: red;">{{ field.label }}: {{ error }}</p>
+                  {% endfor %}
+                {% endfor %}
+                
+                {% for error in form.non_field_errors %}
+                  <p style="color: red;">{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+        </form>
+    </div>
+    {% endif %}
+    <!-- Display Workouts -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                        {% if user == request.user %}
+                        <h3 class="card-title text-center mb-4" style="color: #465056;">Your Workouts</h3>
+                        {% else %}
+                        <h3 class="card-title text-center mb-4">{% if profile.name %}{{ profile.name }}'s{% else %}{{ user }}'s{% endif %} Workouts</h3>
+                        {% endif %}
+                        <div class="workouts-list">
+                            {% for workout in workouts %}
+                            <div class="container">
+                                <div class="card profile-card col-md-8 col-sm-12 shadow-sm px-5 pt-3" style="margin-bottom: 15px; width: 500px; max-width: 500px;">
+                            <div class="workout-item">
+                                <p><strong style="color: #ff661a;">Type:</strong> {{ workout.get_type_display }}</p>
+                                <p><strong style="color: #ff661a;">Duration:</strong> {{ workout.duration }} Minutes</p>
+                                <p><strong style="color: #ff661a;">Date:</strong> {{ workout.date }}</p>
+                                {% if workout.time %}<p><strong style="color: #ff661a;">Time:</strong> {{ workout.time }}</p>{% endif %}
+                                {% if workout.location %}<p><strong style="color: #ff661a;">Location:</strong> {{ workout.location }}</p>{% endif %}
+                                <!-- Delete Button -->
+                                <form action="{% url 'workout-delete' workout.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                                </div>
+                            </div>
+                            </div>
+                            {% empty %}
+                            <p>No workouts recorded yet.</p>
+                    {% endfor %}
+            </div>
+            </div>
+        </div>
+    </div>
+        <!-- Display User Stats -->
+        <div class="row justify-content-center mt-5" style="color: #465056;">
+            <div class="stats-container">
+                <h3 class="text-center mb-4" style="font-weight: 700; font-size: 50px;">Stats</h3>
+                <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
+                    <p style="font-size: 30px; flex-grow: 1;">
+                        <strong style="color: #ff661a;">Streak:</strong> <span>{% if daily_streak is not none %}{{ daily_streak }}{% else %}0{% endif %}</span> days
+                    </p>
+                    <p style="font-size: 30px; flex-grow: 1;">
+                        <strong style="color: #ff661a;">Workouts: </strong><span>{{ workouts.all.count }}</span>
+                    </p>
+                </div>
+            <h5 class="text-center mb-4" style="font-weight: 700; font-size: 40px;">Personal Bests</h5>
+            <div class="personal-bests">
+                <div class="pb-item">
+                    {% if request.user.profile.weight_unit != user.profile.weight_unit %}
+                    {% if user.profile.weight_unit == 'lbs' %}
+                    <p><strong style="color: #ff661a;">Bench Press:</strong> <span>{{ pb_bench | lb_to_kg }}</span> {% if pb_bench is not none %}kg{% endif %} </p>
+                </div>
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">Deadlift:</strong> <span>{{ pb_deadlift | lb_to_kg }}</span> {% if pb_deadlift is not none %}kg{% endif %}</p>
+                </div>
+                {% elif user.profile.weight_unit == 'kg' %}
+                <p><strong style="color: #ff661a;">Bench Press:</strong> <span>{{ pb_bench | kg_to_lb }}</span> {% if pb_bench is not none %}lb{% endif %} </p>
+                </div>
+                <div class="pb-item">
+                <p><strong style="color: #ff661a;">Deadlift:</strong> <span>{{ pb_deadlift | kg_to_lb }}</span> {% if pb_deadlift is not none %}lb{% endif %}</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <p><strong style="color: #ff661a;">Bench Press:</strong> <span>{{ pb_bench }}</span> {% if pb_bench is not none %}{{ weight_unit }}{% endif %} </p>
+            </div>
+            <div class="pb-item">
+                <p><strong style="color: #ff661a;">Deadlift:</strong> <span>{{ pb_deadlift }}</span> {% if pb_deadlift is not none %}{{ weight_unit }}{% endif %}</p>
+            </div>
+                {% endif %}
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">Pull-Ups:</strong> <span>{{ pb_pullups }}</span></p>
+                </div>
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">Push-Ups:</strong> <span>{{ pb_pushups }}</span></p>
+                </div>
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">Plank Time:</strong> <span>{{ pb_planktime }}</span> {% if pb_planktime is not none %}minutes{% endif %}</p>
+                </div>
+                <div class="pb-item">
+                {% if request.user.profile.weight_unit != user.profile.weight_unit %}
+                {% if user.profile.weight_unit == 'lbs' %}
+                    <p><strong style="color: #ff661a;">Squat:</strong> <span>{{ pb_squat | lb_to_kg }}</span> {% if pb_squat is not none %}kg{% endif %}</p>
+                    </div>
+                {% elif user.profile.weight_unit == 'kg' %}
+                    <p><strong style="color: #ff661a;">Squat:</strong> <span>{{ pb_squat | kg_to_lb }}</span> {% if pb_squat is not none %}lb{% endif %}</p>
+                    </div>
+                {% endif %}
+                {% else %}
+                    <p><strong style="color: #ff661a;">Squat:</strong> <span>{{ pb_squat }}</span> {% if pb_squat is not none %}{{ weight_unit }}{% endif %}</p>
+                    </div>
+                {% endif %}
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">Mile Run Time:</strong> <span>{{ pb_miletime }}</span> {% if pb_miletime is not none %}minutes{% endif %} </p>
+                </div>
+                <div class="pb-item">
+                    <p><strong style="color: #ff661a;">5k Run Time:</strong> <span>{{ pb_5ktime }}</span> {% if pb_5ktime is not none %}minutes{% endif %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for post in posts %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 col-sm-12 border-bottom position-relative">
+            <p><strong>{{ post.author }}</strong> {{ post.created_on }}</p>
+            <p>{{ post.body }}</p>
+            <a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+<script>
+    function validateForm() {
+        // Check if any button is active
+        let activeButton = document.querySelector('.workout-buttons button.active');
+        if (!activeButton) {
+            alert("Please select a workout type.");
+            return false; // Prevent form submission
+        }
+        return true; // Allow form submission
+    }
+
+    // Function to set the type when a button is clicked
+    function setType(type) {
+        // Remove active class from all buttons
+        let buttons = document.querySelectorAll('.workout-buttons button');
+        buttons.forEach(button => {
+            button.classList.remove('active');
+        });
+
+        // Set active class to the clicked button
+        let selectedButton = document.querySelector('.workout-buttons button[data-type="' + type + '"]');
+        selectedButton.classList.add('active');
+
+        // Set the value of the hidden input field
+        document.getElementById('id_type').value = type;
+    }
+</script>
+{% endblock content %}
