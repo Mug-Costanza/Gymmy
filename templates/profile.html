@@ -83,6 +83,30 @@
         background-color: #b33c00;
         color: #fff;
     }
+    
+    .pagination .page-link {
+        color: #465056; /* Deep gray for the text */
+        background-color: #ffffff; /* White background for the links */
+        border: 1px solid #465056; /* Deep gray border for the links */
+    }
+
+    .pagination .page-item.active .page-link {
+        color: #ffffff; /* White text for active page */
+        background-color: #ff661a; /* Vibrant orange background for active page */
+        border-color: #ff661a; /* Vibrant orange border for active page */
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #cccccc; /* Light gray text for disabled links */
+        background-color: #ffffff; /* White background for disabled links */
+        border-color: #cccccc; /* Light gray border for disabled links */
+    }
+
+    .pagination .page-link:hover {
+        color: #ffffff; /* White text for hover state */
+        background-color: #465056; /* Deep gray background for hover state */
+        border-color: #465056; /* Deep gray border for hover state */
+    }
 </style>
 <div class="container">
     <div class="row justify-content-center mt-5" style="color: #465056;">
@@ -195,11 +219,13 @@
                                 <p><strong style="color: #ff661a;">Date:</strong> {{ workout.date }}</p>
                                 {% if workout.time %}<p><strong style="color: #ff661a;">Time:</strong> {{ workout.time }}</p>{% endif %}
                                 {% if workout.location %}<p><strong style="color: #ff661a;">Location:</strong> {{ workout.location }}</p>{% endif %}
+                                {% if user == request.user %}
                                 <!-- Delete Button -->
                                 <form action="{% url 'workout-delete' workout.pk %}" method="post">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
+                                {% endif %}
                             </div>
                                 </div>
                             </div>
@@ -211,6 +237,60 @@
             </div>
         </div>
     </div>
+    </div>
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if workouts.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ workouts.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;&laquo;</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+        {% endif %}
+
+        {% for num in workouts.paginator.page_range %}
+            {% if workouts.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > workouts.number|add:'-3' and num < workouts.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if workouts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ workouts.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ workouts.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
         <!-- Display User Stats -->
         <div class="row justify-content-center mt-5" style="color: #465056;">
             <div class="stats-container">
@@ -289,6 +369,8 @@
     {% endfor %}
 </div>
 </div>
+<!-- In base.html head section -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 <script>
     function validateForm() {
         // Check if any button is active
