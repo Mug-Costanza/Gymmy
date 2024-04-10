@@ -74,6 +74,11 @@ class profileView(View):
         weight_unit = profile.weight_unit  # Accessing directly from profile object
         
         workouts = profile.workout_set.all().order_by('-date')  # Ordering workouts by date in descending order
+
+        # Create a paginator object
+        paginator = Paginator(workout_list, 5)  # Show 5 workouts per page
+        page_number = request.GET.get('page')
+        workouts = paginator.get_page(page_number)
         
         current_date = date.today()
 
