@@ -74,7 +74,9 @@ class profileView(View):
         profile = get_object_or_404(UserProfile, pk=pk)
         weight_unit = profile.weight_unit  # Accessing directly from profile object
         
-        workouts = profile.workout_set.all().order_by('-date')  # Ordering workouts by date in descending order
+        # workouts = profile.workout_set.all().order_by('-date')  # Ordering workouts by date in descending order
+        # Fetch workouts in descending order of date
+        workout_list = profile.workout_set.all().order_by('-date')
 
         # Create a paginator object
         paginator = Paginator(workout_list, 5)  # Show 5 workouts per page
