@@ -15,6 +15,7 @@ import datetime
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils.timezone import make_aware
+from django.core.paginator import Paginator
 
 def index(request):
     return render(request, 'index.html')
