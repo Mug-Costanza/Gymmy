@@ -3,6 +3,7 @@ from .models import UserProfile
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from .models import UserProfile
@@ -10,8 +11,10 @@ from django.views.generic import TemplateView, CreateView, UpdateView
 from .models import Workout
 from .forms import WorkoutForm
 from django.utils import timezone
+import datetime
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+from django.utils.timezone import make_aware
 
 def index(request):
     return render(request, 'index.html')
@@ -45,12 +48,23 @@ class WorkoutCreateView(CreateView):
     model = Workout
     form_class = WorkoutForm
     success_url = '/calendar/'  # Redirect to the calendar view after creation
+    
+    def form_invalid(self, form):
+        # Log or print form errors
+        print("Form errors:", form.errors)
+        return super().form_invalid(form)
 
 class WorkoutUpdateView(UpdateView):
     model = Workout
     form_class = WorkoutForm
     success_url = '/calendar/'  # Redirect to the calendar view after update
-
+    
+class WorkoutDeleteView(View):
+    def post(self, request, pk, *args, **kwargs):
+        workout = get_object_or_404(Workout, pk=pk)
+        workout.delete()
+        return redirect('profile', pk=request.user.profile.pk)  # Redirect to the profile page after deletion
+        
 def convert_if_not_none(value, conversion_factor):
     return value * conversion_factor if value is not None else None
 
@@ -59,7 +73,7 @@ class profileView(View):
         profile = get_object_or_404(UserProfile, pk=pk)
         weight_unit = profile.weight_unit  # Accessing directly from profile object
         
-        workouts = profile.workout_set.all()  # Accessing workouts using reverse relationship
+        workouts = profile.workout_set.all().order_by('-date')  # Ordering workouts by date in descending order
         
         current_date = date.today()
 
@@ -76,7 +90,9 @@ class profileView(View):
             'pb_planktime': profile.pb_planktime,
             'pb_miletime': profile.pb_miletime,
             'pb_5ktime': profile.pb_5ktime,
-            'form': WorkoutForm(initial={'date': current_date}),
+            'form': WorkoutForm(initial={'day': current_date.day,
+                                          'month': current_date.month,
+                                          'year': current_date.year}),
             'workouts': workouts,
             'daily_streak': profile.daily_streak,
         }
@@ -86,7 +102,22 @@ class profileView(View):
     def post(self, request, pk, *args, **kwargs):
         form = WorkoutForm(request.POST)
         
+        # Inside your view or form handling code
         if form.is_valid():
+            cleaned_data = form.cleaned_data
+            month = int(cleaned_data['month'])
+            day = int(cleaned_data['day'])
+            year = int(cleaned_data['year'])
+    
+            # Create a datetime object with no specific time (defaults to midnight)
+            combined_datetime = datetime.datetime(year, month, day)
+    
+            # Make the datetime object timezone-aware
+            aware_datetime = make_aware(combined_datetime)
+            
+            # Now 'date' field contains the correct combined date value
+            form = WorkoutForm(cleaned_data)
+            
             # Save the form with the current user's profile
             workout = form.save(commit=False)
             workout.profile_id = pk  # Associate with the correct profile
@@ -98,16 +129,27 @@ class profileView(View):
             
             return redirect('profile', pk=pk)
         else:
-            # Retrieve the profile again as done in the get method
+            print(form.errors)  # Add this line to print form errors
             profile = get_object_or_404(UserProfile, pk=pk)
             workouts = profile.workout_set.all()
             context = {
                 'profile': profile,
                 'form': form,
-                'workouts': workouts
+                'workouts': workouts,
+                'weight_unit': profile.weight_unit,
+                'pb_bench': profile.pb_bench,
+                'pb_deadlift': profile.pb_deadlift,
+                'pb_squat': profile.pb_squat,
+                'pb_pullups': profile.pb_pullups,
+                'pb_pushups': profile.pb_pushups,
+                'pb_planktime': profile.pb_planktime,
+                'pb_miletime': profile.pb_miletime,
+                'pb_5ktime': profile.pb_5ktime,
+                'daily_streak': profile.daily_streak,
             }
-            return redirect('calendar')
-            
+        
+            return render(request, 'profile.html', context)  # Render the page with errors instead of redirecting
+
 def loginView(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -124,17 +166,18 @@ def loginView(request):
 
 def registerView(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # If you have additional actions, like creating a user profile, add them here
+            # Explicitly set the backend attribute to the backend you want to use.
+            # The backend string should match one of the backends listed in AUTHENTICATION_BACKENDS in your settings.py.
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)  # Log the user in
-            return redirect('home')  # Assuming 'home' is the name of your homepage URL
+            return redirect('home')  # Redirect to homepage URL or appropriate URL
     else:
-        form = UserCreationForm()
-        # If you need to pass extra context to your form (like a years range for a date_of_birth field), ensure your form supports it.
+        form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
-
+    
 def logoutView(request):
     logout(request)
     return redirect('home')  # Assuming 'home' is the name of your homepage URL

@@ -45,6 +45,11 @@ class UserProfile(models.Model):
         ('kg', 'Kilograms'),
     )
     
+    SEX_CHOICES = {
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    }
+    
     user = models.OneToOneField(User, primary_key=True, verbose_name='user', related_name='profile', on_delete=models.CASCADE)
     name = models.CharField(max_length=30, blank=True, null=True)
     bio = models.TextField(max_length=500, blank=True)
@@ -56,8 +61,8 @@ class UserProfile(models.Model):
     body_weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     pb_bench = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     pb_deadlift = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
-    pb_pullups = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
-    pb_pushups = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
+    pb_pullups = models.DecimalField(max_digits=5, decimal_places=0, null=True, default=None)
+    pb_pushups = models.DecimalField(max_digits=5, decimal_places=0, null=True, default=None)
     pb_planktime = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     pb_squat = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
     pb_miletime = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
@@ -88,11 +93,11 @@ class Workout(models.Model):
     
     profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
     type = models.CharField(max_length=20, choices=WORKOUT_TYPES, blank=True, null=True)
-    duration = models.DecimalField(max_digits=5, decimal_places=2, null=True, default=None)
-    date = models.DateField()
-    time = models.TimeField()
+    duration = models.DecimalField(max_digits=5, decimal_places=0, null=True, default=None)
+    date = models.DateField(null = True)
+    time = models.TimeField(null = True)
     location = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"Workout on {self.date} at {self.time}, Location: {self.location}"
+        return f"{self.type} on {self.date} at {self.time}, Location: {self.location}"
 
