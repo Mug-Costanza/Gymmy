@@ -189,3 +189,62 @@ def registerView(request):
 def logoutView(request):
     logout(request)
     return redirect('home')  # Assuming 'home' is the name of your homepage URL
+
+#chats
+def chat_home(request):
+    return render(request, "chat_home.html")
+
+
+def room(request, room):
+    username = request.GET.get('username')
+    room_details = Room.objects.get(name=room)
+    return render(request, 'room.html', {
+        'username': username,
+        'room': room,
+        'room_details': room_details,
+    })
+
+def checkview(request):
+    user = request.user
+    friends = user.profile.friends.all()
+    username = request.GET.get('friend_user')
+    name = request.GET.get('username')
+    # Ensure usernames is a list
+    usernames_list = [username, name]
+
+    # Sort the list of usernames
+    sorted_usernames = sorted(usernames_list)
+
+    # Construct the URL with the sorted usernames
+    room_url = sorted_usernames[0] + sorted_usernames[1]
+
+    room = request.GET.get('room')
+    username = request.GET.get('username')
+
+    if not room_url:
+        return HttpResponseBadRequest("Room name cannot be empty")
+
+    if Room.objects.filter(name=room_url).exists():
+        return redirect('/'+room_url)
+    else:
+        new_room = Room.objects.create(name=room_url)
+        return redirect('/'+room_url)
+
+    return render(request, 'my_template.html', {'sorted_usernames': sorted_usernames, 'room_url': room_url})
+    
+
+def send(request):
+    message = request.POST['message']
+    username = request.POST['username']
+    room_id = request.POST['room_id']
+
+    new_message = Message.objects.create(value=message, user=username, room=room_id)
+    new_message.save()
+    return HttpResponse('Message sent successfully')
+
+def getMessages(request, room):
+    room_details = Room.objects.get(name=room)
+
+    messages = Message.objects.filter(room=room_details.id)
+    return JsonResponse({"messages": list(messages.values())})
+
