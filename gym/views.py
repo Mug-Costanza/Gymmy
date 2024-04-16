@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from .models import UserProfile
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import UserProfile, Room, Message
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
@@ -16,6 +16,9 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils.timezone import make_aware
 from django.core.paginator import Paginator
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+import random
+from django.urls import reverse
 
 def index(request):
     return render(request, 'index.html')
