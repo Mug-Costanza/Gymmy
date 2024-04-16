@@ -17,5 +17,10 @@ urlpatterns = [
     path('workout/delete/<int:pk>/', WorkoutDeleteView.as_view(), name='workout-delete'),
     path('login', loginView, name='login'),
     path('logout', logoutView, name='logout'),
-    path('register', registerView, name='register')
+    path('register', registerView, name='register'),
+    path('chat_home', chat_home, name='chat_home'),
+    path('<str:room>/', room, name='room'),
+    path('checkview', checkview, name='checkview'),
+    path('send', send, name='send'),
+    path('getMessages/<str:room>/', getMessages, name='getMessages')
 ]
