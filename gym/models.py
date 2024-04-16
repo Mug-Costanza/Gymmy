@@ -77,6 +77,25 @@ class UserProfile(models.Model):
     def reset_streak(self):
         self.daily_streak = 0
         self.save()
+    friends = models.ManyToManyField('self', blank=True)
+
+    def add_friend(self, friend):
+        """
+        Add a friend to the user's friend list.
+        """
+        self.friends.add(friend)
+    
+    def remove_friend(self, friend):
+        """
+        Remove a friend from the user's friend list.
+        """
+        self.friends.remove(friend)
+    
+    def get_friends(self):
+        """
+        Get the user's friend list.
+        """
+        return self.friends.all()
 
 class Workout(models.Model):
 
@@ -100,4 +119,13 @@ class Workout(models.Model):
 
     def __str__(self):
         return f"{self.type} on {self.date} at {self.time}, Location: {self.location}"
+
+class Room(models.Model):
+    name = models.CharField(max_length=1000)
+    
+class Message(models.Model):
+    value = models.CharField(max_length=1000)
+    date = models.DateTimeField(default=datetime.now, blank=True)
+    user = models.CharField(max_length=1000)
+    room =  models.CharField(max_length=1000)
 
