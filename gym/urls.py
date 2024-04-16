@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, about, calendar, findPartner, findTrainer, profileView, loginView, registerView, logoutView
+from .views import index, about, calendar, findPartner, findTrainer, profileView, loginView, registerView, logoutView, chat_home, getMessages, send, room, checkview
 from .views import CalendarView, WorkoutCreateView, WorkoutUpdateView, WorkoutDeleteView, localGyms
 
 urlpatterns = [
