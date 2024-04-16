@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+
+.message-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 5px solid #465056;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.conversation {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #465056;
+}
+
+.pic img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.details {
+    flex-grow: 1;
+}
+
+.details h5 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.details p {
+    margin: 0;
+    color: #465056;
+}
+
+.time {
+    font-size: 14px;
+    color: #999;
+} 
+
+
+
+</style>
+<!--<link rel="stylesheet" type="text/css" href="{% static 'css/messages.css' %}">  Add your stylesheet path here -->
+
+<div class="message-container">
+    
+    <h1>Conversations</h1>
+
+    {% if user.profile.friends.all %}
+        {% for friend in user.profile.friends.all %}
+                <a href="{% url 'checkview' %}?room={{ room_url }}&username={{ user.username|urlencode }}&friend_user={{friend.user|urlencode}}">
+             <div class="conversation">
+                <div class="pic">
+                    <img src="{{ friend.picture.url }}" alt="Image not foud" />
+                </div>
+                <div class="details">
+                    <h5>{{ friend.user }}</h5>
+                    {% if friend.last_message %}
+                        <p>{{ friend.last_message.content }}</p>
+                        <div class="time">{{ friend.last_message.timestamp|date:"H:i" }}</div>
+                    {% else %}
+                        <p>{{ friend.user }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+       {% endfor %}
+    {% else %}
+        <p>No friends found</p>
+    {% endif %}
+
+</div>
+
+
+{% endblock %}
