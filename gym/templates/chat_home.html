@@ -35,6 +35,7 @@
 .details h5 {
     margin: 0;
     font-size: 18px;
+    color: black;
 }
 
 .details p {
@@ -46,6 +47,10 @@
     font-size: 14px;
     color: #999;
 } 
+
+a {
+    text-decoration: none;
+}
 
 
 
@@ -65,12 +70,14 @@
                 </div>
                 <div class="details">
                     <h5>{{ friend.user }}</h5>
+                    <!-- add functionality to display last message sent
                     {% if friend.last_message %}
                         <p>{{ friend.last_message.content }}</p>
                         <div class="time">{{ friend.last_message.timestamp|date:"H:i" }}</div>
                     {% else %}
                         <p>{{ friend.user }}</p>
                     {% endif %}
+                    -->
                 </div>
             </div>
         </a>
