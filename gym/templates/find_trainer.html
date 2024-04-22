@@ -139,7 +139,7 @@
 
   .button {
     display: block;
-    margin-top: 10px;
+    margin-top: 5px;
     padding: 5px 10px;
     background-color: #ff7733;
     color: #fff;
@@ -152,9 +152,10 @@
 
   .bio_text {
     background-color: #f2f2f2;
+    font-size: 17px;
     padding: 5px;
     border-radius: 10px;
-    height: 130px;
+    height: 160px;
   }
 
   .help_form {
@@ -170,7 +171,7 @@
         background-color: rgba(0, 0, 0, 0.5); /* Transparent background */
         color: white;
         max-width: 400px;
-        font-size: 10px;
+        font-size: large;
         display: block;
         position: relative;
         bottom: 0; /* Position at the bottom */
@@ -189,7 +190,6 @@
     }
 
 .form_container {
-  width: 25%;
   margin: 0 auto;
   background-color: #f2f2f2;
   padding: 20px;
@@ -198,13 +198,12 @@
   text-align: center;
 }
 
-.form_container h2 {
-  text-align: center;
-}
-
 .form_container form {
     display: inline-block;
-    text-align: left; /* Reset text alignment for form elements */
+}
+
+.right a {
+  text-decoration: none;
 }
 
 
@@ -218,17 +217,17 @@
     <!-- Full-width images with number and caption text -->
     <div class="mySlides">
         <div class="numbertext">1 / 3</div>
-        <img src="{% static 'big_bird.png' %}" class="trainer-picture" width="400" height="400" />
+        <img src="{% static 'gym_trainer_01.png' %}" class="trainer-picture" width="400" height="400" />
     </div>
 
     <div class="mySlides">
         <div class="numbertext">2 / 3</div>
-        <img src="{% static 'chewie.png' %}" class="trainer-picture" width="400" height="400" />
+        <img src="{% static 'gym_trainer_02.png' %}" class="trainer-picture" width="400" height="400" />
     </div>
 
     <div class="mySlides">
         <div class="numbertext">3 / 3</div>
-        <img src="{% static 'ronnie.png' %}" class="trainer-picture" width="400" height="400" />
+        <img src="{% static 'gym_trainer_03.png' %}" class="trainer-picture" width="400" height="400" />
     </div>
 
     <!-- Next and previous buttons -->
@@ -247,13 +246,15 @@
 <div class="bio_container">
     <div class="left">
         <figure>
-            <img src="{% static 'default.png' %}" alt="Image" style="max-width: 50%; height: auto;">
-            <figcaption>Bird</figcaption>
+            <img src="{% static 'chewie.png' %}" alt="Image" style="max-width: 50%; height: auto;">
+            <figcaption>Trainer Chewie</figcaption>
         </figure>
     </div>
     <div class="right">
-      <p class="bio_text">placeholder text</p>
+      <p class="bio_text">Unleash your inner Wookiee warrior with Trainer Chewbacca! With over a decade of experience in fitness, Chewbacca offers a unique blend of strength training and functional fitness tailored to your needs. His empathetic approach ensures a supportive journey, whether you're a beginner or a seasoned gym-goer. Join Chewbacca for a fitness adventure that's out of this world!</p>
+      <a href="{% url 'checkview' %}?room={{ room_url }}&username={{ user.username|urlencode }}&friend_user=Chewbacca">
         <button class="button">Message</button>
+      </a>
     </div>
     <div style="clear: both;"></div>
   </div>
@@ -261,13 +262,15 @@
   <div class="bio_container">
     <div class="left">
         <figure>
-            <img src="{% static 'default.png' %}" alt="Image" style="max-width: 50%; height: auto;">
-            <figcaption>Chewbacca</figcaption>
+            <img src="{% static 'big_bird.png' %}" alt="Image" style="max-width: 50%; height: auto;">
+            <figcaption>Trainer Big Bird</figcaption>
         </figure>
     </div>
     <div class="right">
-      <p class="bio_text">placeholder text</p>
-      <button class="button">Message</button>
+      <p class="bio_text">Meet Trainer Big Bird, your cheerful guide to fitness adventures! With years of experience, Big Bird crafts personalized workouts for all levels. His boundless energy and sunny attitude make every session a joy. Whether you're aiming high or starting small, Big Bird will help you spread your wings and soar toward your fitness goals. Let's make every workout feel like a sunny day on Sesame Street.</p>
+      <a href="{% url 'checkview' %}?room={{ room_url }}&username={{ user.username|urlencode }}&friend_user=Bigbird">
+        <button class="button">Message</button>
+      </a>
     </div>
     <div style="clear: both;"></div>
   </div>
@@ -275,14 +278,15 @@
   <div class="bio_container">
     <div class="left">
         <figure>
-            <img src="{% static 'default.png' %}" alt="Image" style="max-width: 50%; height: auto;">
-            <figcaption>Ronnie</figcaption>
+            <img src="{% static 'ronnie.png' %}" alt="Image" style="max-width:167px; height:171px; margin-bottom: 5px;">
+            <figcaption style="width:171.21px; margin: 0px 85.6px;">Ronnie Coleman</figcaption>
         </figure>
     </div>
     <div class="right">
-      <p class="bio_text">placeholder text
-      </p>
-      <button class="button">Message</button>
+      <p class="bio_text">Introducing Ronnie Coleman, a true legend in the fitness world! With eight Mr. Olympia titles to his name, Coleman is renowned for his unparalleled dedication to bodybuilding and strength training. His motto, "Yeah buddy! Light weight, baby!" inspires millions to push their limits in the gym. Join the legacy and train like a champion with Ronnie Coleman today!</p>
+      <a href="{% url 'checkview' %}?room={{ room_url }}&username={{ user.username|urlencode }}&friend_user=Ronniecoleman">
+        <button class="button">Message</button>
+      </a>
     </div>
     <div style="clear: both;"></div>
   </div>
@@ -296,10 +300,12 @@
     <div class="form_container">
 
         <h2>Contact Form</h2>
-
-        <form action="" method="post">
-        <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="4" cols="50"></textarea><br>
+        
+        <form action="{% url 'contact_view' %}" method="post">
+        {% csrf_token %}
+        <label for="feedback">Message:</label>
+        <br>
+        <textarea id="feedback" name="feedback" rows="4" cols="50"></textarea><br>
         <label for="email">Email:</label><br>
         <input type="email" id="email" name="email"><br><br>
         <input type="submit" value="Submit">
