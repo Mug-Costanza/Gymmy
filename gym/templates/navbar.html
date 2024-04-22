@@ -28,9 +28,9 @@
                     <i class="fas fa-user profile-icon" style="font-size: 36px; color: #fff; margin-right: 10px;"></i>
                 </div>
             </a>
-            </div>
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'chat_home' %}" style="color: #ffffff;">Message Icon</a>
+        </div>
+            <li class="nav-item" style="list-style: none;">
+              <a class="nav-link" href="{% url 'chat_home' %}" style="color: #ffffff;"><img src="{% static 'messages.png' %}" width="50" height="50"/></a>
             </li>
             <li class="nav-item" style="list-style: none;">
               <a class="nav-link" href="{% url 'calendar' %}" style="color: #ffffff;"><img src="{% static 'calendar.png' %}" width="50" height="50"/></a>
@@ -47,4 +47,5 @@
   </div>
 </nav>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 
