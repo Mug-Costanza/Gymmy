@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import index, about, calendar, findPartner, findTrainer, profileView, loginView, registerView, logoutView, chat_home, getMessages, send, room, checkview
-from .views import CalendarView, WorkoutCreateView, WorkoutUpdateView, WorkoutDeleteView, localGyms
+from .views import CalendarView, WorkoutCreateView, WorkoutUpdateView, WorkoutDeleteView, localGyms, contact_view
 
 urlpatterns = [
     path('', index, name='index'),
@@ -22,5 +22,7 @@ urlpatterns = [
     path('<str:room>/', room, name='room'),
     path('checkview', checkview, name='checkview'),
     path('send', send, name='send'),
-    path('getMessages/<str:room>/', getMessages, name='getMessages')
+    path('getMessages/<str:room>/', getMessages, name='getMessages'),
+    path('find_trainer/contact/', contact_view, name='contact_view'),
 ]
+
