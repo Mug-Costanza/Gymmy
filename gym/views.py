@@ -19,6 +19,8 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 import random
 from django.urls import reverse
+from django.core.mail import send_mail
+from django.conf import settings
 
 def index(request):
     return render(request, 'index.html')
@@ -238,7 +240,7 @@ def checkview(request):
 
 def send(request):
     message = request.POST['message']
-    username = request.POST['username']
+    username = request.user.username
     room_id = request.POST['room_id']
 
     new_message = Message.objects.create(value=message, user=username, room=room_id)
@@ -251,3 +253,18 @@ def getMessages(request, room):
     messages = Message.objects.filter(room=room_details.id)
     return JsonResponse({"messages": list(messages.values())})
 
+def contact_view(request):
+    if request.method == 'POST':
+        feedback = request.POST.get('feedback', '')
+        email = request.POST.get('email', '')
+
+        # Send email
+        send_mail(
+            subject="Received contact form submission",
+            message=feedback,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.NOTIFY_EMAIL],
+        )
+        # Render the same page with a success message
+        return render(request, 'contact.html', {'success': True})
+    return render(request, 'find_trainer.html', {'success': False})
