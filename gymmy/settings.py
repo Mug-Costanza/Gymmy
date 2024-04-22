@@ -52,9 +52,15 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = 'index'
-ACCOUNT_EMAIL_REQUIRED = True
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# email setting - non functional
+DEFAULT_FROM_EMAIL = "will@learndjango.com"
+NOTIFY_EMAIL = "will@learndjango.com"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.sendgrid.net"  # new
+EMAIL_HOST_USER = "apikey"  # new
+EMAIL_HOST_PASSWORD = "<sendgrid_password>"  # new
+EMAIL_PORT = 587  # new
+EMAIL_USE_TLS = True  # new
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ACCOUNT_FORMS = {
